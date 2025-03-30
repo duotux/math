@@ -9,7 +9,7 @@ migrate = Migrate()
 login_manager = LoginManager()  # 先创建实例
 
 def create_app():
-    app = Flask(__name__)
+    app = Flask(__name__, template_folder='../templates')  # 指定模板文件夹路径
     app.config.from_object(Config)
     
     db.init_app(app)

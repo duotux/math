@@ -15,7 +15,8 @@ def load_user(user_id):
 @bp.route('/')
 def index():
     if current_user.is_authenticated:
-        return redirect(url_for('main.student') if current_user.role == 'student' else redirect(url_for('main.teacher')))
+        # 修改重定向逻辑，避免嵌套 redirect
+        return redirect(url_for('main.student') if current_user.role == 'student' else url_for('main.teacher'))
     return redirect(url_for('main.login'))
 
 @bp.route('/login', methods=['GET', 'POST'])
