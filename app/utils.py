@@ -10,7 +10,8 @@ def generate_problem():
     c = random.randint(-5, 5)
     d = random.randint(1, 5)
     
-    expr = f"({a}/{b}) {op} ({c}/{d})"
+    # 格式化题目表达式
+    expr = f"({a} / {b}) {op} ({c} / {d})"
     try:
         answer = round(eval(expr), 2)
     except ZeroDivisionError:

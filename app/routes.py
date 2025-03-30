@@ -63,7 +63,8 @@ def submit_answer():
     problem = Problem.query.get(session.get('current_problem'))
     try:
         user_answer = float(request.form.get('answer'))
-        is_correct = math.isclose(user_answer, problem.answer, abs_tol=0.01)
+        # 直接比较四舍五入后的答案
+        is_correct = round(user_answer, 2) == round(problem.answer, 2)
     except:
         is_correct = False
     
