@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block title %}学生面板{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <div class="card mb-4">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0">今日练习题</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('main.submit_answer') }}">
+                    <div class="text-center mb-4">
+                        <div class="display-4">{{ problem }}</div>
+                    </div>
+                    <div class="input-group input-group-lg">
+                        <input type="number" step="0.01" 
+                               class="form-control text-center" 
+                               name="answer" 
+                               placeholder="输入答案" 
+                               required>
+                        <button class="btn btn-success" type="submit">提交答案</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0">最近练习记录</h5>
+            </div>
+            <ul class="list-group list-group-flush">
+                {% for record in history %}
+                <li class="list-group-item d-flex justify-content-between 
+                    {% if record.is_correct %}list-group-item-success{% else %}list-group-item-danger{% endif %}">
+                    <span>{{ record.problem_ref.expression }}</span>
+                    <span>{{ "✓" if record.is_correct else "✗" }}</span>
+                </li>
+                {% else %}
+                <li class="list-group-item text-muted">暂无记录</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}

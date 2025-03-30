@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block title %}教师面板{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                班级整体数据
+            </div>
+            <div class="card-body">
+                <h1 class="display-1 text-center">{{ accuracy }}%</h1>
+                <p class="text-center text-muted">平均正确率</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-8">
+        <div class="card mb-4">
+            <div class="card-header bg-warning text-dark">
+                高频错题TOP3
+            </div>
+            <div class="card-body">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>题目</th>
+                            <th>错误次数</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for error in common_errors %}
+                        <tr>
+                            <td>{{ error[0] }}</td>
+                            <td>{{ error[1] }}</td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="2" class="text-muted">暂无数据</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header bg-info text-white">
+        学生列表
+    </div>
+    <div class="card-body">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>学号</th>
+                    <th>年级</th>
+                    <th>最后活跃时间</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for student in students %}
+                <tr>
+                    <td>{{ student.username }}</td>
+                    <td>{{ student.grade }}</td>
+                    <td>{{ student.last_active.strftime('%Y-%m-%d %H:%M') if student.last_active else '从未登录' }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
