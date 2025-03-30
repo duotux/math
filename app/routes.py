@@ -42,20 +42,20 @@ def logout():
 @bp.route('/student')
 @login_required
 def student():
-    expr, answer = generate_problem()
+    expr, answer = generate_problem()  # 调用更新后的函数生成题目
     problem = Problem(expression=expr, answer=answer)
     db.session.add(problem)
     db.session.commit()
     session['current_problem'] = problem.id
-    
-    history = AnswerRecord.query.filter_by(user_id=current_user.id)\
-                .join(Problem)\
-                .order_by(AnswerRecord.timestamp.desc())\
-                .limit(5).all()
-    
+
+    history = AnswerRecord.query.filter_by(user_id=current_user.id) \
+        .join(Problem) \
+        .order_by(AnswerRecord.timestamp.desc()) \
+        .limit(5).all()
+
     return render_template('student.html',
-                         problem=expr,
-                         history=history)
+                           problem=expr,
+                           history=history)
 
 @bp.route('/submit', methods=['POST'])
 @login_required
@@ -180,3 +180,21 @@ def change_password(student_id):
         return redirect(url_for('main.teacher'))
     
     return render_template('change_password.html', student=student)
+
+@bp.route('/teacher/clear_records/<int:student_id>')
+@login_required
+def clear_records(student_id):
+    if current_user.role != 'teacher':
+        flash('权限不足', 'danger')
+        return redirect(url_for('main.student'))
+
+    student = User.query.get(student_id)
+    if student:
+        # 删除该学生的所有答题记录
+        AnswerRecord.query.filter_by(user_id=student.id).delete()
+        db.session.commit()
+        flash('学生答题记录清除成功', 'success')
+    else:
+        flash('未找到该学生账号', 'danger')
+
+    return redirect(url_for('main.teacher'))
