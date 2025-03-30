@@ -8,7 +8,6 @@ class User(UserMixin, db.Model):
     username = db.Column(db.String(64), unique=True, index=True)
     password_hash = db.Column(db.String(128))
     role = db.Column(db.String(10))  # student/teacher
-    grade = db.Column(db.String(20))
     last_active = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
     answers = db.relationship('AnswerRecord', backref='author', lazy='dynamic')
 

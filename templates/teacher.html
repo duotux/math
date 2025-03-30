@@ -52,20 +52,26 @@
         学生列表
     </div>
     <div class="card-body">
+        <a href="{{ url_for('main.create_student') }}" class="btn btn-primary mb-3">创建学生账号</a>
         <table class="table table-striped">
             <thead>
                 <tr>
                     <th>学号</th>
-                    <th>年级</th>
-                    <th>最后活跃时间</th>
+                    <th>答题总题数</th>
+                    <th>正确率</th>
+                    <th>操作</th>
                 </tr>
             </thead>
             <tbody>
-                {% for student in students %}
+                {% for stat in student_stats %}
                 <tr>
-                    <td>{{ student.username }}</td>
-                    <td>{{ student.grade }}</td>
-                    <td>{{ student.last_active.strftime('%Y-%m-%d %H:%M') if student.last_active else '从未登录' }}</td>
+                    <td>{{ stat.student.username }}</td>
+                    <td>{{ stat.total_answers }}</td>
+                    <td>{{ stat.accuracy|round(2) }}%</td>
+                    <td>
+                        <a href="{{ url_for('main.change_password', student_id=stat.student.id) }}" class="btn btn-warning btn-sm">修改密码</a>
+                        <a href="{{ url_for('main.delete_student', student_id=stat.student.id) }}" class="btn btn-danger btn-sm">删除账号</a>
+                    </td>
                 </tr>
                 {% endfor %}
             </tbody>

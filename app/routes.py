@@ -99,7 +99,83 @@ def teacher():
      .order_by(db.func.count(AnswerRecord.id).desc())\
      .limit(3).all()
     
+    # 查询每个学生的答题总题数和正确率
+    student_stats = []
+    for student in students:
+        total_answers = AnswerRecord.query.filter_by(user_id=student.id).count()
+        correct_answers = AnswerRecord.query.filter_by(user_id=student.id, is_correct=True).count()
+        if total_answers > 0:
+            student_accuracy = (correct_answers / total_answers) * 100
+        else:
+            student_accuracy = 0
+        student_stats.append({
+            'student': student,
+            'total_answers': total_answers,
+            'accuracy': student_accuracy
+        })
+    
     return render_template('teacher.html',
                          students=students,
                          accuracy=round(accuracy, 2),
-                         common_errors=common_errors)
+                         common_errors=common_errors,
+                         student_stats=student_stats)
+
+@bp.route('/teacher/create_student', methods=['GET', 'POST'])
+@login_required
+def create_student():
+    if current_user.role != 'teacher':
+        flash('权限不足', 'danger')
+        return redirect(url_for('main.student'))
+    
+    if request.method == 'POST':
+        username = request.form.get('username')
+        password = request.form.get('password')
+        if not User.query.filter_by(username=username).first():
+            student = User(username=username, role='student')
+            student.set_password(password)
+            db.session.add(student)
+            db.session.commit()
+            flash('学生账号创建成功', 'success')
+            return redirect(url_for('main.teacher'))
+        else:
+            flash('用户名已存在', 'danger')
+    
+    return render_template('create_student.html')
+
+@bp.route('/teacher/delete_student/<int:student_id>')
+@login_required
+def delete_student(student_id):
+    if current_user.role != 'teacher':
+        flash('权限不足', 'danger')
+        return redirect(url_for('main.student'))
+    
+    student = User.query.get(student_id)
+    if student:
+        db.session.delete(student)
+        db.session.commit()
+        flash('学生账号删除成功', 'success')
+    else:
+        flash('未找到该学生账号', 'danger')
+    
+    return redirect(url_for('main.teacher'))
+
+@bp.route('/teacher/change_password/<int:student_id>', methods=['GET', 'POST'])
+@login_required
+def change_password(student_id):
+    if current_user.role != 'teacher':
+        flash('权限不足', 'danger')
+        return redirect(url_for('main.student'))
+    
+    student = User.query.get(student_id)
+    if not student:
+        flash('未找到该学生账号', 'danger')
+        return redirect(url_for('main.teacher'))
+    
+    if request.method == 'POST':
+        new_password = request.form.get('new_password')
+        student.set_password(new_password)
+        db.session.commit()
+        flash('学生账号密码修改成功', 'success')
+        return redirect(url_for('main.teacher'))
+    
+    return render_template('change_password.html', student=student)
