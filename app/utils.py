@@ -68,4 +68,7 @@ def generate_problem():
     except SyntaxError:
         # 如果出现语法错误，重新生成题目
         return generate_problem()
+    except TypeError:
+        # 如果出现类型错误（如将整数当作函数调用），重新生成题目
+        return generate_problem()
     return expr, answer
