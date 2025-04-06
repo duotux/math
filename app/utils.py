@@ -51,15 +51,17 @@ def generate_problem():
             num = eval(token) if '/' in token else float(token)
             new_expr.append(convert_fraction(num))
         elif token == '**2':
-            new_expr.append('²')
+            new_expr.append('<sup>2</sup>')
+        elif token == '*':
+            new_expr.append('×')
         else:
             new_expr.append(token)
     expr = " ".join(new_expr)
 
     try:
         # 计算答案并保留两位小数
-        # 先将 ² 替换回 **2 再计算
-        safe_expr = expr.replace('²', '**2')
+        # 先将 <sup>2</sup> 替换回 **2 再计算
+        safe_expr = expr.replace('<sup>2</sup>', '**2')
         # 使用 eval 计算表达式
         answer = round(eval(safe_expr), 2)
     except ZeroDivisionError:

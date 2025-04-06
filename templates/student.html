@@ -3,7 +3,6 @@
 {% block title %}学生面板{% endblock %}
 
 {% block content %}
-<!-- 在 student.html 中 -->
 <div class="col-md-8">
     <div class="card mb-4">
         <div class="card-header bg-success text-white">
@@ -26,6 +25,20 @@
         </div>
     </div>
 </div>
+
+    {% if last_problem_answer is defined %}
+    <div class="col-md-12">
+        <div class="card mb-4">
+            <div class="card-header {% if last_answer_correct %}bg-success{% else %}bg-danger{% endif %} text-white">
+                <h5 class="mb-0">上一题结果</h5>
+            </div>
+            <div class="card-body">
+                <p>上一题的正确答案是: <strong>{{ last_problem_answer }}</strong></p>
+                <p>你的回答 {% if last_answer_correct %}正确{% else %}错误{% endif %}。</p>
+            </div>
+        </div>
+    </div>
+    {% endif %}
 
     <div class="col-md-4">
         <div class="card">

@@ -77,7 +77,24 @@ def submit_answer():
     db.session.add(record)
     current_user.last_active = datetime.now(timezone.utc)
     db.session.commit()
-    return redirect(url_for('main.student'))
+    
+    # 生成新的题目
+    expr, answer = generate_problem()
+    new_problem = Problem(expression=expr, answer=answer)
+    db.session.add(new_problem)
+    db.session.commit()
+    session['current_problem'] = new_problem.id
+
+    history = AnswerRecord.query.filter_by(user_id=current_user.id) \
+        .join(Problem) \
+        .order_by(AnswerRecord.timestamp.desc()) \
+        .limit(5).all()
+
+    return render_template('student.html',
+                           problem=expr,
+                           history=history,
+                           last_problem_answer=problem.answer,
+                           last_answer_correct=is_correct)
 
 @bp.route('/teacher')
 @login_required

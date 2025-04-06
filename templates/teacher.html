@@ -1,3 +1,4 @@
+<!-- math/templates/teacher.html -->
 {% extends "base.html" %}
 
 {% block title %}教师面板{% endblock %}
@@ -32,7 +33,7 @@
                     <tbody>
                         {% for error in common_errors %}
                         <tr>
-                            <td>{{ error[0] }}</td>
+                            <td>{{ error[0]|safe }}</td>
                             <td>{{ error[1] }}</td>
                         </tr>
                         {% else %}
