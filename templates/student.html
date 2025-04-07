@@ -55,6 +55,7 @@
                 {% else %}
                 <li class="list-group-item text-muted">暂无记录</li>
                 {% endfor %}
+                <a href="{{ url_for('main.student_change_password') }}" class="btn btn-warning btn-sm">修改密码</a>
             </ul>
         </div>
     </div>

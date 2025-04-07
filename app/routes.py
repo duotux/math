@@ -215,3 +215,28 @@ def clear_records(student_id):
         flash('未找到该学生账号', 'danger')
 
     return redirect(url_for('main.teacher'))
+
+
+@bp.route('/student/change_password', methods=['GET', 'POST'])
+@login_required
+def student_change_password():
+    if current_user.role != 'student':
+        flash('权限不足', 'danger')
+        return redirect(url_for('main.student'))
+    
+    if request.method == 'POST':
+        current_password = request.form.get('current_password')
+        new_password = request.form.get('new_password')
+        confirm_password = request.form.get('confirm_password')
+        
+        if not current_user.check_password(current_password):
+            flash('当前密码不正确', 'danger')
+        elif new_password != confirm_password:
+            flash('新密码和确认密码不一致', 'danger')
+        else:
+            current_user.set_password(new_password)
+            db.session.commit()
+            flash('密码修改成功', 'success')
+            return redirect(url_for('main.student'))
+    
+    return render_template('student_change_password.html')
