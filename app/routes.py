@@ -4,6 +4,7 @@ from app import db, login_manager  # 确保导入 login_manager
 from app.models import User, Problem, AnswerRecord
 from app.utils import generate_problem
 from datetime import datetime, timezone
+from fractions import Fraction
 
 bp = Blueprint('main', __name__)
 
@@ -57,14 +58,33 @@ def student():
                            problem=expr,
                            history=history)
 
+
+
+
+
 @bp.route('/submit', methods=['POST'])
 @login_required
 def submit_answer():
     problem = Problem.query.get(session.get('current_problem'))
+    user_answer = None  # 初始化 user_answer 变量
     try:
-        user_answer = float(request.form.get('answer'))
+        user_input = request.form.get('answer')
+        # 尝试将用户输入转换为小数
+        try:
+            user_answer = float(user_input)
+        except ValueError:
+            # 如果不是小数，尝试解析为分数
+            try:
+                fraction = Fraction(user_input)
+                user_answer = float(fraction)
+            except ValueError:
+                # 无法解析为小数或分数，视为错误答案
+                pass
         # 直接比较四舍五入后的答案
-        is_correct = round(user_answer, 2) == round(problem.answer, 2)
+        if user_answer is not None:
+            is_correct = round(user_answer, 2) == round(problem.answer, 2)
+        else:
+            is_correct = False
     except:
         is_correct = False
     
