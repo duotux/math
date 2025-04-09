@@ -40,10 +40,14 @@ def logout():
     logout_user()
     return redirect(url_for('main.login'))
 
+# 在 app/routes.py 中
+import logging
+
 @bp.route('/student')
 @login_required
 def student():
     expr, answer = generate_problem()  # 调用更新后的函数生成题目
+    logging.info(f"Generated expression: {expr}")  # 添加日志输出
     problem = Problem(expression=expr, answer=answer)
     db.session.add(problem)
     db.session.commit()
@@ -62,29 +66,20 @@ def student():
 
 
 
+
 @bp.route('/submit', methods=['POST'])
 @login_required
 def submit_answer():
     problem = Problem.query.get(session.get('current_problem'))
-    user_answer = None  # 初始化 user_answer 变量
     try:
-        user_input = request.form.get('answer')
-        # 尝试将用户输入转换为小数
+        user_answer_input = request.form.get('answer')
+        # 尝试将输入解析为分数或浮点数
         try:
-            user_answer = float(user_input)
+            user_answer = float(Fraction(user_answer_input))
         except ValueError:
-            # 如果不是小数，尝试解析为分数
-            try:
-                fraction = Fraction(user_input)
-                user_answer = float(fraction)
-            except ValueError:
-                # 无法解析为小数或分数，视为错误答案
-                pass
+            user_answer = float(user_answer_input)
         # 直接比较四舍五入后的答案
-        if user_answer is not None:
-            is_correct = round(user_answer, 2) == round(problem.answer, 2)
-        else:
-            is_correct = False
+        is_correct = round(user_answer, 2) == round(problem.answer, 2)
     except:
         is_correct = False
     

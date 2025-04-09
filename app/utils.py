@@ -18,24 +18,17 @@ def generate_rational_number():
         return Fraction(numerator, denominator)
 
 def generate_problem():
-    """生成包含四个有理数的计算题，包含加减乘除和平方运算"""
+    """生成包含四个有理数的计算题，包含加减乘除运算"""
     # 生成四个有理数
     numbers = [generate_rational_number() for _ in range(4)]
-    # 定义运算符列表，包含加减乘除和平方
-    operators = ['+', '-', '*', '/', '**2']
+    # 定义运算符列表，包含加减乘除
+    operators = ['+', '-', '*', '/']
 
     # 随机选择三个运算符
     op1, op2, op3 = random.choices(operators, k=3)
 
     # 构建表达式
-    if op1 == '**2':
-        expr = f"({numbers[0]}{op1}) {random.choice(['+', '-', '*', '/'])} ({numbers[1]}) {op2} ({numbers[2]}) {op3} ({numbers[3]})"
-    elif op2 == '**2':
-        expr = f"({numbers[0]}) {op1} ({numbers[1]}{op2}) {random.choice(['+', '-', '*', '/'])} ({numbers[2]}) {op3} ({numbers[3]})"
-    elif op3 == '**2':
-        expr = f"({numbers[0]}) {op1} ({numbers[1]}) {op2} ({numbers[2]}{op3}) {random.choice(['+', '-', '*', '/'])} ({numbers[3]})"
-    else:
-        expr = f"({numbers[0]}) {op1} ({numbers[1]}) {op2} ({numbers[2]}) {op3} ({numbers[3]})"
+    expr = f"({numbers[0]}) {op1} ({numbers[1]}) {op2} ({numbers[2]}) {op3} ({numbers[3]})"
 
     # 将分数转换为字符串形式
     def convert_fraction(num):
@@ -50,18 +43,17 @@ def generate_problem():
         if token.replace('.', '', 1).isdigit() or ('/' in token and token.replace('/', '', 1).replace('-', '', 1).isdigit()):
             num = eval(token) if '/' in token else float(token)
             new_expr.append(convert_fraction(num))
-        elif token == '**2':
-            new_expr.append('<sup>2</sup>')
         elif token == '*':
             new_expr.append('×')
+        elif token == '/':
+            new_expr.append('÷')
         else:
             new_expr.append(token)
     expr = " ".join(new_expr)
 
     try:
         # 计算答案并保留两位小数
-        # 先将 <sup>2</sup> 替换回 **2 再计算
-        safe_expr = expr.replace('<sup>2</sup>', '**2')
+        safe_expr = expr.replace('×', '*').replace('÷', '/')
         # 使用 eval 计算表达式
         answer = round(eval(safe_expr), 2)
     except ZeroDivisionError:
